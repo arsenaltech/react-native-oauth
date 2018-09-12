@@ -111,7 +111,6 @@ public class OAuthManagerDialogFragment extends DialogFragment implements Advanc
         mWebView.getSettings().setDomStorageEnabled(true);
         mWebView.getSettings().setUserAgentString("Mozilla/5.0 Google");
 
-
         LayoutParams layoutParams = this.getFullscreenLayoutParams(context);
         //new LayoutParams(
         //   LayoutParams.FILL_PARENT,
@@ -172,7 +171,7 @@ public class OAuthManagerDialogFragment extends DialogFragment implements Advanc
           realHeight = display.getHeight();
       }
 
-      return new LayoutParams(realWidth, realHeight-convertDpToPixel(50f,context));
+      return new LayoutParams(realWidth, realHeight);
     }
 
 

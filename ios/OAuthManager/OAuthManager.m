@@ -91,7 +91,9 @@ RCT_EXPORT_MODULE(OAuthManager);
             dispatch_async(dispatch_get_main_queue(), ^{
                 safariViewController = [[SFSafariViewController alloc] initWithURL:URL];
                 UIViewController *viewController = application.keyWindow.rootViewController;
-                [viewController presentViewController:safariViewController animated:YES completion: nil];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [viewController presentViewController:safariViewController animated:YES completion: nil];
+                });
             });
         } else {
             [application openURL:URL];
@@ -305,7 +307,8 @@ RCT_EXPORT_METHOD(authorize:(NSString *)providerName
     NSMutableDictionary *cfg = [[manager getConfigForProvider:providerName] mutableCopy];
     
     DCTAuthAccount *existingAccount = [manager accountForProvider:providerName];
-    NSString *clientID = ((DCTOAuth2Credential *) existingAccount).clientID;
+    NSString *clientID = ([providerName isEqualToString:@"google"]) ? ((DCTOAuth2Credential *) existingAccount).clientID : (NSString *)nil;
+
     if (([providerName isEqualToString:@"google"] && existingAccount && clientID != nil)
         || (![providerName isEqualToString:@"google"] && existingAccount != nil)) {
         if ([existingAccount isAuthorized]) {
@@ -488,9 +491,12 @@ RCT_EXPORT_METHOD(makeRequest:(NSString *)providerName
         } else {
             NSInteger statusCode = response.statusCode;
             NSData *rawData = response.data;
+            NSDictionary *headers = response.HTTPHeaders;
             
             NSError *err;
             NSArray *data;
+
+            
             
             // Check if returned data is a valid JSON
             // != nil returned if the rawdata is not a valid JSON
@@ -512,9 +518,11 @@ RCT_EXPORT_METHOD(makeRequest:(NSString *)providerName
                                           };
                 callback(@[errResp]);
             } else {
+                
                 NSDictionary *resp = @{
                                        @"status": @(statusCode),
-                                       @"data": data != nil ? data : @[]
+                                       @"data": data != nil ? data : @[],
+                                       @"headers": headers,
                                        };
                 callback(@[[NSNull null], resp]);
             }

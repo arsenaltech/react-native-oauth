@@ -273,14 +273,14 @@ public class OAuthManagerProviders {
     if (opts != null && opts.hasKey("scopes")) {
       scopes = (String) opts.getString("scopes");
       String scopeStr = null;
-      
+
       if (!rawScopes)
         scopeStr = OAuthManagerProviders.getScopeString(scopes, ",");
       else
         scopeStr = scopes;
-        
+
       builder.scope(scopeStr);
-    } 
+    }
 
     if (callbackUrl != null) {
       builder.callback(callbackUrl);
